@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:camel="http://camel.apache.org/schema/blueprint"
+   xmlns:config="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+   xmlns:jasypt="http://karaf.apache.org/xmlns/jasypt/v1.0.0"
+   xmlns:jaxrs="http://cxf.apache.org/blueprint/jaxrs"
+   xsi:schemaLocation="
+     http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/smlns/blueprint/v1.0.0/blueprint.xsd
+     http://camel.apache.org/shcema/blueprint http://camel.apache.org/schema/blueprint/camel-blueprint.xsd
+     http://cxf.apache.org/blueprint/jaxrs http://cxf.apache.org/schemas/blueprint/jaxrs.xsd">
+
+  <!-- OSGi blueprint property placeholder binding to a configuration file -->
+  <config:property-placeholder id="com.omniprise.osgi.webapp.ws.props" persistent-id="com.omniprise.osgi.webapp.ws" update-strategy="reload">
+    <config:default-properties>
+    </config:default-properties>
+  </config:property-placeholder>
+
+  <bean id="webAppService" class="com.omniprise.osgi.webapp.ws.WebAppService" />
+  
+  <bean id="dateConversionProvider" class="com.omniprise.osgi.webapp.ws.DateParameterConverterProvider" />
+
+  <bean id="jaasAuthenticationFilter" class="org.apache.cxf.jaxrs.security.JAASAuthenticationFilter">
+    <property name="contextName" value="karaf" />
+    <property name="roleClassifier" value="RolePrincipal" />
+    <property name="roleClassifierType" value="classname" />
+  </bean>
+
+  <bean id="authorizationInterceptor" class="org.apache.cxf.interceptor.security.SimpleAuthorizingInterceptor">
+    <property name="globalRoles" value="webapp"/>
+  </bean>
+  
+  <bean id="authorizationFilter" class="org.apache.cxf.jaxrs.security.SimpleAuthorizingFilter">
+    <property name="interceptor" ref="authorizationInterceptor" />
+  </bean>
+
+  <bean id="confidentialInterceptor" class="com.omniprise.osgi.webapp.ws.interceptor.ConfidentialInterceptor">
+    <property name="httpsPort" value="8443" />
+  </bean>
+
+  <jaxrs:server id="webAppWsServer" address="/demo">
+    <jaxrs:serviceBeans>
+      <ref component-id="webAppService"/>
+    </jaxrs:serviceBeans>
+    <!-- jaxrs:inInterceptors>
+      <ref component-id="confidentialInterceptor"/>
+    </jaxrs:inInterceptors -->
+    <jaxrs:providers>
+      <ref component-id="dateConversionProvider" />
+      <!-- ref component-id="jaasAuthenticationFilter"/ -->
+      <!-- ref component-id="authorizationFilter"/ -->
+    </jaxrs:providers>
+  </jaxrs:server>
+
+</blueprint>
