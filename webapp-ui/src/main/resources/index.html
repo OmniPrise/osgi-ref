@@ -1,0 +1,42 @@
+<!DOCTYPE HTML>
+<html lang="en">
+  <head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Web App</title>
+    <link type="text/css" rel="stylesheet" href="css/normalize.css">
+    <link type="text/css" rel="stylesheet" href="css/bootstrap.css">
+    <link type="text/css" rel="stylesheet" href="css/webapp.css">
+  </head>
+  <script src="js/angular.js"></script>
+  <script src="js/angular-animate.js"></script>
+  <script src="js/angular-touch.js"></script>
+  <script src="js/angular-cookies.js"></script>
+  <script src="js/ui-bootstrap.js"></script>
+  <script src="js/webapp.js"></script>
+  <body>
+    <div class="header">
+      <header class="logo">
+        <img src="./images/CH.horz_.reverse.png" alt="Central Health">
+      </header>
+    </div>
+    <div class="menu" ng-app="webApp" ng-controller="webTabCtrl">
+      <uib-tabset class="frame" active=$root.selectedTab>
+        <uib-tab heading="Web App" select="getMessage();">
+          <div class="tab-container">
+            <div class="tab-panel">
+              <table class="table-sm-center">
+                <tr>
+                  <td>TimeStamp</td>
+                  <td>{{$root.message.timestamp}}</td>
+                </tr>
+              </table>
+              <div class="center"><button title="Get Messsage" ng-click="getMessage()">Get Message</button></div>
+            </div>
+          </div>
+        </uib-tab>
+      </uib-tabset>
+    </div>
+  </body>
+</html>
